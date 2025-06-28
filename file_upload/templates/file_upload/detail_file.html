@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        line-height: 1.6;
+    }
+    
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+    
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 25px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    .back-btn:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .detail-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .file-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 40px;
+        text-align: center;
+    }
+    
+    .file-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .file-icon svg {
+        width: 40px;
+        height: 40px;
+        color: white;
+    }
+    
+    .file-title {
+        font-size: 2em;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .file-subtitle {
+        font-size: 1.1em;
+        opacity: 0.9;
+    }
+    
+    .file-content {
+        padding: 40px;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+    
+    .info-section {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .info-section h3 {
+        color: #333;
+        font-size: 1.2em;
+        margin-bottom: 15px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .info-section h3::before {
+        content: '';
+        width: 3px;
+        height: 20px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 2px;
+    }
+    
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .info-item:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #555;
+    }
+    
+    .info-value {
+        color: #333;
+        font-weight: 500;
+    }
+    
+    .preview-section {
+        margin-top: 30px;
+    }
+    
+    .preview-container {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        border: 2px dashed #dee2e6;
+    }
+    
+    .preview-container img {
+        max-width: 100%;
+        max-height: 400px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .preview-container iframe {
+        width: 100%;
+        height: 500px;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .no-preview {
+        color: #6c757d;
+        font-size: 1.1em;
+        padding: 40px;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    .download-btn {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+    }
+    
+    .delete-btn {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+    
+    .edit-btn {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+    }
+    
+    .folder-tag {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        color: #1976d2;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: 500;
+        display: inline-block;
+        box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px 15px;
+        }
+        
+        .file-header {
+            padding: 30px 20px;
+        }
+        
+        .file-title {
+            font-size: 1.5em;
+        }
+        
+        .file-content {
+            padding: 20px;
+        }
+        
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .btn {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="container">
+    <a href="{% url 'file_upload:list_file' %}" class="back-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+        </svg>
+        Back to File List
+    </a>
+    
+    <div class="detail-card">
+        <div class="file-header">
+            <div class="file-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                </svg>
+            </div>
+            <h1 class="file-title">{{ file.file.name|slice:"7:" }}</h1>
+            <p class="file-subtitle">File Details</p>
+        </div>
+        
+        <div class="file-content">
+            <div class="info-grid">
+                <div class="info-section">
+                    <h3>File Information</h3>
+                    <div class="info-item">
+                        <span class="info-label">File Name:</span>
+                        <span class="info-value">{{ file.file.name|slice:"7:" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">File Size:</span>
+                        <span class="info-value">{{ file.file.size|filesizeformat }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">File Type:</span>
+                        <span class="info-value">{{ file.mime_type|default:"Unknown" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Extension:</span>
+                        <span class="info-value">{{ file.extension }}</span>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h3>Upload Information</h3>
+                    <div class="info-item">
+                        <span class="info-label">Uploaded By:</span>
+                        <span class="info-value">{{ file.uploaded_by.username }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Upload Date:</span>
+                        <span class="info-value">{{ file.uploaded_at|date:"M d, Y H:i" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Location:</span>
+                        <span class="info-value">
+                            {% if file.folder %}
+                                <span class="folder-tag">{{ file.folder.name }}</span>
+                            {% else %}
+                                Root Directory
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            {% if file.mime_type %}
+                <div class="preview-section">
+                    <h3 style="margin-bottom: 20px; color: #333; font-size: 1.3em;">File Preview</h3>
+                    <div class="preview-container">
+                        {% if file.mime_type|slice:":5" == "image" %}
+                            <img src="{{ file.file.url }}" alt="{{ file.file.name }}" />
+                        {% elif file.mime_type == "application/pdf" %}
+                            <iframe src="{{ file.file.url }}" title="PDF Preview"></iframe>
+                        {% elif file.mime_type|slice:":4" == "text" %}
+                            <iframe src="{{ file.file.url }}" title="Text Preview"></iframe>
+                        {% else %}
+                            <div class="no-preview">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="#6c757d" style="margin-bottom: 20px;">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                </svg>
+                                <p>Preview not available for this file type</p>
+                                <p style="font-size: 0.9em; margin-top: 10px;">Click download to view the file</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <div class="action-buttons">
+                <a href="{{ file.file.url }}" class="btn download-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12,10V6A2,2 0 0,0 10,4A2,2 0 0,0 8,6V10A2,2 0 0,0 6,12A2,2 0 0,0 8,14V18A2,2 0 0,0 10,20A2,2 0 0,0 12,18V14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M14,2H10V4H14V2Z"/>
+                    </svg>
+                    Download File
+                </a>
+                <a href="{% url 'file_upload:delete_file' file.id %}" class="btn delete-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6,19c0,1.1 0.9,2 2,2h8c1.1,0 2-0.9 2-2V7H6V19M8,9h8v10H8V9M15.5,4l-1-1h-5l-1,1H5v2h14V4H15.5Z"/>
+                    </svg>
+                    Delete File
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

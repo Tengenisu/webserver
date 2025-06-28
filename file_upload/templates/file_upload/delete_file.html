@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        min-height: 100vh;
+        line-height: 1.6;
+    }
+    
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+    
+    .delete-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        text-align: center;
+    }
+    
+    .delete-header {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+        padding: 40px;
+    }
+    
+    .warning-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .warning-icon svg {
+        width: 40px;
+        height: 40px;
+        color: white;
+    }
+    
+    .delete-title {
+        font-size: 2em;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .delete-subtitle {
+        font-size: 1.1em;
+        opacity: 0.9;
+    }
+    
+    .delete-content {
+        padding: 40px;
+    }
+    
+    .file-info {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .file-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #e9ecef, #dee2e6);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .file-icon svg {
+        width: 30px;
+        height: 30px;
+        color: #6c757d;
+    }
+    
+    .file-name {
+        font-size: 1.3em;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    
+    .file-details {
+        color: #666;
+        font-size: 0.9em;
+        line-height: 1.4;
+    }
+    
+    .warning-message {
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        border: 2px solid #ffc107;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        color: #856404;
+    }
+    
+    .warning-message h3 {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .warning-message h3::before {
+        content: '';
+        width: 3px;
+        height: 20px;
+        background: #ffc107;
+        border-radius: 2px;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    .cancel-btn {
+        background: linear-gradient(135deg, #6c757d, #5a6268);
+        color: white;
+    }
+    
+    .delete-btn {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+    
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 25px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    .back-btn:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px 15px;
+        }
+        
+        .delete-header {
+            padding: 30px 20px;
+        }
+        
+        .delete-title {
+            font-size: 1.5em;
+        }
+        
+        .delete-content {
+            padding: 20px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .btn {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="container">
+    <a href="{% url 'file_upload:list_file' %}" class="back-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+        </svg>
+        Back to File List
+    </a>
+    
+    <div class="delete-card">
+        <div class="delete-header">
+            <div class="warning-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12,2L1,21H23M12,6L19.53,19H4.47M11,10V14H13V10M11,16V18H13V16"/>
+                </svg>
+            </div>
+            <h1 class="delete-title">Delete File</h1>
+            <p class="delete-subtitle">This action cannot be undone</p>
+        </div>
+        
+        <div class="delete-content">
+            <div class="file-info">
+                <div class="file-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                </div>
+                <div class="file-name">{{ file.file.name|slice:"7:" }}</div>
+                <div class="file-details">
+                    <p>Size: {{ file.file.size|filesizeformat }}</p>
+                    <p>Uploaded by: {{ file.uploaded_by.username }} on {{ file.uploaded_at|date:"M d, Y" }}</p>
+                    {% if file.folder %}
+                        <p>Location: {{ file.folder.name }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="warning-message">
+                <h3>⚠️ Warning</h3>
+                <p>You are about to permanently delete this file. This action cannot be undone and the file will be removed from the server.</p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="action-buttons">
+                    <a href="{% url 'file_upload:list_file' %}" class="btn cancel-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                        </svg>
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn delete-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6,19c0,1.1 0.9,2 2,2h8c1.1,0 2-0.9 2-2V7H6V19M8,9h8v10H8V9M15.5,4l-1-1h-5l-1,1H5v2h14V4H15.5Z"/>
+                        </svg>
+                        Delete File
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

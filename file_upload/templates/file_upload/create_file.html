@@ -1,0 +1,471 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        line-height: 1.6;
+    }
+    
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+    
+    .upload-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        padding: 40px;
+        text-align: center;
+    }
+    
+    .upload-header {
+        margin-bottom: 40px;
+    }
+    
+    .upload-header h1 {
+        color: #333;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    
+    .upload-header p {
+        color: #666;
+        font-size: 1.1em;
+    }
+    
+    .upload-area {
+        border: 3px dashed #ddd;
+        border-radius: 15px;
+        padding: 60px 20px;
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        background: #fafafa;
+    }
+    
+    .upload-area:hover {
+        border-color: #667eea;
+        background: #f0f4ff;
+    }
+    
+    .upload-area.dragover {
+        border-color: #667eea;
+        background: #e8f2ff;
+        transform: scale(1.02);
+    }
+    
+    .upload-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+    
+    .upload-icon svg {
+        width: 40px;
+        height: 40px;
+        color: white;
+    }
+    
+    .upload-text h3 {
+        color: #333;
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+    
+    .upload-text p {
+        color: #666;
+        margin-bottom: 20px;
+    }
+    
+    .file-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .selected-file {
+        background: #e8f5e8;
+        border: 2px solid #4caf50;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        display: none;
+    }
+    
+    .selected-file.show {
+        display: block;
+    }
+    
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .file-icon {
+        width: 50px;
+        height: 50px;
+        background: #4caf50;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .file-icon svg {
+        width: 25px;
+        height: 25px;
+        color: white;
+    }
+    
+    .file-details h4 {
+        color: #333;
+        margin-bottom: 5px;
+        word-break: break-all;
+    }
+    
+    .file-details p {
+        color: #666;
+        font-size: 0.9em;
+    }
+    
+    .remove-file {
+        background: #ff4444;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9em;
+        margin-left: auto;
+    }
+    
+    .remove-file:hover {
+        background: #cc0000;
+    }
+    
+    .upload-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 50px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .upload-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+    }
+    
+    .upload-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        background-color: #6c757d;
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 50px;
+        margin-bottom: 20px;
+        transition: background-color 0.3s;
+        font-weight: bold;
+    }
+    
+    .back-btn:hover {
+        background-color: #5a6268;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: #f0f0f0;
+        border-radius: 3px;
+        margin: 20px 0;
+        overflow: hidden;
+        display: none;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+    
+    .supported-formats {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 30px;
+    }
+    
+    .supported-formats h4 {
+        color: #333;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    
+    .format-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    .format-tag {
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.9em;
+        font-weight: bold;
+    }
+    
+    .error-message {
+        background: #ffebee;
+        color: #c62828;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border-left: 4px solid #f44336;
+    }
+    
+    .success-message {
+        background: #e8f5e8;
+        color: #2e7d32;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border-left: 4px solid #4caf50;
+    }
+    
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px 10px;
+        }
+        
+        .upload-card {
+            padding: 30px 20px;
+        }
+        
+        .upload-header h1 {
+            font-size: 2em;
+        }
+        
+        .upload-area {
+            padding: 40px 15px;
+        }
+    }
+</style>
+
+<div class="container">
+    <!-- Back Button -->
+    <a href="{% url 'file_upload:list_file' %}" class="back-btn">
+        ← Back to Files
+    </a>
+    
+    <div class="upload-card">
+        <!-- Header -->
+        <div class="upload-header">
+            <h1>Upload File</h1>
+            <p>Drag and drop your file here or click to browse</p>
+        </div>
+        
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="error-message">
+                        {{ message }}
+                    </div>
+                {% else %}
+                    <div class="success-message">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        
+        <!-- Upload Form -->
+        <form method="POST" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+            
+            <!-- Upload Area -->
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                </div>
+                <div class="upload-text">
+                    <h3>Choose a file or drag it here</h3>
+                    <p>Maximum file size: 50MB</p>
+                </div>
+                <input type="file" name="file" id="fileInput" class="file-input" accept="*/*">
+            </div>
+            
+            <!-- Selected File Display -->
+            <div class="selected-file" id="selectedFile">
+                <div class="file-info">
+                    <div class="file-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                    </div>
+                    <div class="file-details">
+                        <h4 id="fileName">File Name</h4>
+                        <p id="fileSize">File Size</p>
+                    </div>
+                    <button type="button" class="remove-file" onclick="removeFile()">Remove</button>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <!-- Upload Button -->
+            <button type="submit" class="upload-btn" id="uploadBtn" disabled>
+                Upload File
+            </button>
+        </form>
+        
+        <!-- Supported Formats -->
+        <div class="supported-formats">
+            <h4>Supported File Types</h4>
+            <div class="format-list">
+                <span class="format-tag">Images (JPG, PNG, GIF)</span>
+                <span class="format-tag">Documents (PDF, DOC, TXT)</span>
+                <span class="format-tag">Videos (MP4, AVI, MOV)</span>
+                <span class="format-tag">Audio (MP3, WAV, FLAC)</span>
+                <span class="format-tag">Archives (ZIP, RAR)</span>
+                <span class="format-tag">And more...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const selectedFile = document.getElementById('selectedFile');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect(files[0]);
+        }
+    });
+    
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+    
+    // Handle file selection
+    function handleFileSelect(file) {
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        selectedFile.classList.add('show');
+        uploadBtn.disabled = false;
+        
+        // Show progress bar
+        progressBar.style.display = 'block';
+        simulateProgress();
+    }
+    
+    // Remove file
+    function removeFile() {
+        fileInput.value = '';
+        selectedFile.classList.remove('show');
+        uploadBtn.disabled = true;
+        progressBar.style.display = 'none';
+        progressFill.style.width = '0%';
+    }
+    
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Simulate progress
+    function simulateProgress() {
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 10;
+            if (progress > 90) {
+                progress = 90;
+                clearInterval(interval);
+            }
+            progressFill.style.width = progress + '%';
+        }, 100);
+    }
+    
+    // Form submission
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = 'Uploading...';
+        progressFill.style.width = '100%';
+    });
+</script>
+{% endblock %}
