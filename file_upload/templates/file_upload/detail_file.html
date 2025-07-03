@@ -173,6 +173,14 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
     
+    .preview-container video {
+        width: 100%;
+        max-height: 600px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        background: #000;
+    }
+    
     .no-preview {
         color: #6c757d;
         font-size: 1.1em;
@@ -344,6 +352,31 @@
                             <iframe src="{{ file.file.url }}" title="PDF Preview"></iframe>
                         {% elif file.mime_type|slice:":4" == "text" %}
                             <iframe src="{{ file.file.url }}" title="Text Preview"></iframe>
+                        {% elif file.mime_type|slice:":5" == "video" or file.extension == "mp4" %}
+                            <video src="{{ file.file.url }}" controls>
+                                <source src="{{ file.file.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% else %}
+                            <div class="no-preview">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="#6c757d" style="margin-bottom: 20px;">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                </svg>
+                                <p>Preview not available for this file type</p>
+                                <p style="font-size: 0.9em; margin-top: 10px;">Click download to view the file</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="preview-section">
+                    <h3 style="margin-bottom: 20px; color: #333; font-size: 1.3em;">File Preview</h3>
+                    <div class="preview-container">
+                        {% if file.extension == "mp4" %}
+                            <video src="{{ file.file.url }}" controls>
+                                <source src="{{ file.file.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
                         {% else %}
                             <div class="no-preview">
                                 <svg width="64" height="64" viewBox="0 0 24 24" fill="#6c757d" style="margin-bottom: 20px;">

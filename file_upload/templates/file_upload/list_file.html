@@ -365,6 +365,69 @@
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     }
     
+    /* Video Preview Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+    }
+    
+    .modal-content {
+        position: relative;
+        background: rgba(255, 255, 255, 0.95);
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 800px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    
+    .close:hover,
+    .close:focus {
+        color: #333;
+    }
+    
+    .video-container {
+        width: 100%;
+        margin-top: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .video-container video {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    
+    .preview-btn {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        color: white;
+    }
+    
+    .preview-btn:hover {
+        background: linear-gradient(135deg, #ff5252, #d63031);
+    }
+    
     @media (max-width: 768px) {
         .container {
             padding: 20px 15px;
@@ -407,6 +470,15 @@
     }
 </style>
 
+<div style="display: flex; justify-content: flex-end; align-items: center; padding: 20px 40px 0 0;">
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger" style="padding: 8px 22px; border-radius: 25px; font-weight: 600; font-size: 1em; background: linear-gradient(135deg, #dc3545, #c82333); color: white; border: none; box-shadow: 0 2px 8px rgba(220,53,69,0.15); cursor: pointer; transition: all 0.3s;">Logout</button>
+        </form>
+    {% endif %}
+</div>
+
 <div class="container">
     <!-- Breadcrumb Navigation -->
     {% if current_folder %}
@@ -442,32 +514,34 @@
     </div>
     
     <div class="action-bar">
-        {% if current_folder %}
-            <a href="{% url 'file_upload:create_file_in_folder' current_folder.id %}" class="upload-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
-                </svg>
-                Upload New File
-            </a>
-            <a href="{% url 'file_upload:create_folder_in_folder' current_folder.id %}" class="create-folder-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z"/>
-                </svg>
-                Create New Folder
-            </a>
-        {% else %}
-            <a href="{% url 'file_upload:create_file' %}" class="upload-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
-                </svg>
-                Upload New File
-            </a>
-            <a href="{% url 'file_upload:create_folder' %}" class="create-folder-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z"/>
-                </svg>
-                Create New Folder
-            </a>
+        {% if request.user.is_superuser %}
+            {% if current_folder %}
+                <a href="{% url 'file_upload:create_file_in_folder' current_folder.id %}" class="upload-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                    </svg>
+                    Upload New File
+                </a>
+                <a href="{% url 'file_upload:create_folder_in_folder' current_folder.id %}" class="create-folder-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z"/>
+                    </svg>
+                    Create New Folder
+                </a>
+            {% else %}
+                <a href="{% url 'file_upload:create_file' %}" class="upload-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                    </svg>
+                    Upload New File
+                </a>
+                <a href="{% url 'file_upload:create_folder' %}" class="create-folder-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z"/>
+                    </svg>
+                    Create New Folder
+                </a>
+            {% endif %}
         {% endif %}
     </div>
     
@@ -505,12 +579,14 @@
                             </svg>
                             Details
                         </a>
-                        <a href="{% url 'file_upload:delete_folder' folder.id %}" class="btn delete-btn">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M6,19c0,1.1 0.9,2 2,2h8c1.1,0 2-0.9 2-2V7H6V19M8,9h8v10H8V9M15.5,4l-1-1h-5l-1,1H5v2h14V4H15.5Z"/>
-                            </svg>
-                            Delete
-                        </a>
+                        {% if request.user.is_superuser %}
+                            <a href="{% url 'file_upload:delete_folder' folder.id %}" class="btn delete-btn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M6,19c0,1.1 0.9,2 2,2h8c1.1,0 2-0.9 2-2V7H6V19M8,9h8v10H8V9M15.5,4l-1-1h-5l-1,1H5v2h14V4H15.5Z"/>
+                                </svg>
+                                Delete
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
@@ -543,18 +619,28 @@
                             </svg>
                             Details
                         </a>
+                        {% if file.file.name|slice:"-4:" == '.mp4' %}
+                        <button onclick="openVideoModal('{{ file.file.url }}', '{{ file.file.name|slice:"7:" }}')" class="btn preview-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8,5.14V19.14L19,12.14L8,5.14Z"/>
+                            </svg>
+                            Preview
+                        </button>
+                        {% endif %}
                         <a href="{{ file.file.url }}" class="btn download-btn">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12,10V6A2,2 0 0,0 10,4A2,2 0 0,0 8,6V10A2,2 0 0,0 6,12A2,2 0 0,0 8,14V18A2,2 0 0,0 10,20A2,2 0 0,0 12,18V14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M14,2H10V4H14V2Z"/>
                             </svg>
                             Download
                         </a>
-                        <a href="{% url 'file_upload:delete_file' file.id %}" class="btn delete-btn">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M6,19c0,1.1 0.9,2 2,2h8c1.1,0 2-0.9 2-2V7H6V19M8,9h8v10H8V9M15.5,4l-1-1h-5l-1,1H5v2h14V4H15.5Z"/>
-                            </svg>
-                            Delete
-                        </a>
+                        {% if request.user.is_superuser %}
+                            <a href="{% url 'file_upload:delete_file' file.id %}" class="btn delete-btn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M6,19c0,1.1 0.9,2 2,2h8c1.1,0 2-0.9 2-2V7H6V19M8,9h8v10H8V9M15.5,4l-1-1h-5l-1,1H5v2h14V4H15.5Z"/>
+                                </svg>
+                                Delete
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
@@ -570,35 +656,82 @@
             <h3>No files or folders yet</h3>
             <p>Get started by uploading a file or creating a folder</p>
             <div class="action-bar">
-                {% if current_folder %}
-                    <a href="{% url 'file_upload:create_file_in_folder' current_folder.id %}" class="upload-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
-                        </svg>
-                        Upload Your First File
-                    </a>
-                    <a href="{% url 'file_upload:create_folder_in_folder' current_folder.id %}" class="create-folder-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z"/>
-                        </svg>
-                        Create Your First Folder
-                    </a>
-                {% else %}
-                    <a href="{% url 'file_upload:create_file' %}" class="upload-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
-                        </svg>
-                        Upload Your First File
-                    </a>
-                    <a href="{% url 'file_upload:create_folder' %}" class="create-folder-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z"/>
-                        </svg>
-                        Create Your First Folder
-                    </a>
+                {% if request.user.is_superuser %}
+                    {% if current_folder %}
+                        <a href="{% url 'file_upload:create_file_in_folder' current_folder.id %}" class="upload-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                            </svg>
+                            Upload Your First File
+                        </a>
+                        <a href="{% url 'file_upload:create_folder_in_folder' current_folder.id %}" class="create-folder-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z"/>
+                            </svg>
+                            Create Your First Folder
+                        </a>
+                    {% else %}
+                        <a href="{% url 'file_upload:create_file' %}" class="upload-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                            </svg>
+                            Upload Your First File
+                        </a>
+                        <a href="{% url 'file_upload:create_folder' %}" class="create-folder-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z"/>
+                            </svg>
+                            Create Your First Folder
+                        </a>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
     {% endif %}
 </div>
+
+<!-- Video Preview Modal -->
+<div id="video-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="video-container">
+            <video id="video-player" controls>
+                <source id="video-source" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get the modal
+    var modal = document.getElementById("video-modal");
+    var videoPlayer = document.getElementById("video-player");
+    var videoSource = document.getElementById("video-source");
+
+    // Function to open video modal
+    function openVideoModal(videoUrl, fileName) {
+        modal.style.display = "block";
+        videoSource.src = videoUrl;
+        videoPlayer.load();
+        videoPlayer.play();
+    }
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+        videoPlayer.pause();
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+            videoPlayer.pause();
+        }
+    }
+</script>
 {% endblock %}

@@ -18,10 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.shortcuts import redirect
 
 urlpatterns = [
+    path('', lambda request: redirect('login', permanent=False)),  # Redirect root to login
     path('admin/', admin.site.urls),
-    path('file/' , include('file_upload.urls')),
+    path('file/', include('file_upload.urls')),
+    path('user_auth/', include('user_auth.urls')),
 ]
 
 if settings.DEBUG:

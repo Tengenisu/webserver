@@ -20,7 +20,7 @@ class FileForm(ModelForm):
             raise ValidationError("File size must be less than 50MB.")
         
         # Check file extension
-        allowed_extensions = ['.pdf', '.doc', '.docx', '.txt', '.jpg', '.jpeg', '.png', '.gif', '.zip', '.rar']
+        allowed_extensions = ['.pdf', '.doc', '.docx', '.txt', '.jpg', '.jpeg', '.png', '.gif', '.zip', '.rar', '.mp4']
         file_extension = os.path.splitext(file.name)[1].lower()
         
         if file_extension not in allowed_extensions:

@@ -1,19 +1,23 @@
-from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from .models import FileUpload, CreateFolder
 from .forms import FileForm , FolderForm
 import mimetypes
 import os
+from django.contrib.auth.mixins import UserPassesTestMixin
 
 # Create your views here.
 
 #--------------file based views--------------
-class CreateFile(CreateView):
+class CreateFile(UserPassesTestMixin, CreateView):
     form_class = FileForm
     template_name = 'file_upload/create_file.html'
+    
+    def test_func(self):
+        return self.request.user.is_superuser
     
     def get_success_url(self):
         folder_id = self.kwargs.get('folder_id')
@@ -98,15 +102,19 @@ class DetailFile(DetailView):
         file = get_object_or_404(FileUpload, id=file_id)
         file_url = file.file.url
         file_path = file.file.path
+        print(file_path , file_url)
 
         file.mime_type = mimetypes.guess_type(file_path)[0]
         return file
 
-class DeleteFile(DeleteView):
+class DeleteFile(UserPassesTestMixin, DeleteView):
     model = FileUpload
     template_name = 'file_upload/delete_file.html'
     success_url = reverse_lazy('file_upload:list_file')
     context_object_name = 'file'
+    
+    def test_func(self):
+        return self.request.user.is_superuser
     
     def get_object(self):
         file_id = self.kwargs.get('id')
@@ -121,9 +129,12 @@ class DeleteFile(DeleteView):
 
 
 #---------------- folder based views--------------
-class CreateFolderView(CreateView):
+class CreateFolderView(UserPassesTestMixin, CreateView):
     form_class = FolderForm
     template_name = 'file_upload/create_folder.html'
+    
+    def test_func(self):
+        return self.request.user.is_superuser
     
     def get_success_url(self):
         # Redirect back to the current folder if we're in one, otherwise to root
@@ -183,11 +194,14 @@ class DetailFolder(DetailView):
         folder_id = self.kwargs.get('id')
         return get_object_or_404(CreateFolder, id=folder_id)
 
-class DeleteFolder(DeleteView):
+class DeleteFolder(UserPassesTestMixin, DeleteView):
     model = CreateFolder
     template_name = 'file_upload/delete_folder.html'
     success_url = reverse_lazy('file_upload:list_file')
     context_object_name = 'folder'
+    
+    def test_func(self):
+        return self.request.user.is_superuser
     
     def get_object(self):
         folder_id = self.kwargs.get('id')
