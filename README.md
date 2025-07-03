@@ -64,12 +64,6 @@ A modern, full-featured Django webserver for file uploads, folder management, an
 
 ---
 
-## ✨ Screenshots
-
-> _Add your screenshots here!_
-
----
-
 ## 📦 Folder Structure
 
 ```
